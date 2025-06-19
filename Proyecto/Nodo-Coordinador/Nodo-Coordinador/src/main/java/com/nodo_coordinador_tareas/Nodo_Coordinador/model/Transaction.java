@@ -27,7 +27,7 @@ public class Transaction implements Serializable {
     private String id;
     private String usuarioEmisor;
     private String usuarioReceptor;
-    private BigDecimal monto;
+    private int monto;
     private Instant timestamp;
 
 

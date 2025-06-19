@@ -2,10 +2,8 @@ package com.nodo_coordinador_tareas.Nodo_Coordinador.controller;
 
 
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.Block;
-import com.nodo_coordinador_tareas.Nodo_Coordinador.model.Transaction;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.repository.IBlockRepository;
-import com.nodo_coordinador_tareas.Nodo_Coordinador.service.IBlockService;
-import com.nodo_coordinador_tareas.Nodo_Coordinador.service.TransactionPoolService;
+import com.nodo_coordinador_tareas.Nodo_Coordinador.service.BlockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +16,7 @@ public class BlockchainController {
     IBlockRepository blockRepository;
 
     @Autowired
-    IBlockService blockService;
-
-    @Autowired
-    TransactionPoolService transactionPoolService;
+    BlockService blockService;
 
 
     @PostMapping
@@ -36,14 +31,5 @@ public class BlockchainController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
-    @PostMapping("/transactions")
-    public String agregarTransaccion(@RequestBody Transaction transaction) {
-        transactionPoolService.guardar(transaction);
-        return "Transacción agregada al pool";
-    }
-
-
-
 
 }
