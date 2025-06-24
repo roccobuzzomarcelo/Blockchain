@@ -31,9 +31,9 @@ public class GenesisBlockInitializer {
                     .build();
 
             blockRepository.save(genesisBlock);
-            System.out.println("✅ Bloque Génesis creado y guardado en Redis.");
+            System.out.println("Bloque Génesis creado y guardado en Redis.");
         } else {
-            System.out.println("ℹ️ El bloque génesis ya existe. No se creó uno nuevo.");
+            System.out.println("ℹEl bloque génesis ya existe. No se creó uno nuevo.");
         }
     }
 }

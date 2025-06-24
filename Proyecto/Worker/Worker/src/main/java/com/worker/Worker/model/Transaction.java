@@ -1,17 +1,14 @@
-package com.nodo_coordinador_tareas.Nodo_Coordinador.model;
+package com.worker.Worker.model;
 
-import com.nodo_coordinador_tareas.Nodo_Coordinador.enums.EstadoTransaction;
+import com.worker.Worker.enums.EstadoTransaction;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
 @Builder
 @Data
@@ -30,5 +27,6 @@ public class Transaction implements Serializable {
     private int monto;
     private Instant timestamp;
     private EstadoTransaction estado;
-    
+
 }
+

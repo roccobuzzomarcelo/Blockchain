@@ -1,4 +1,5 @@
-package com.nodo_coordinador_tareas.Nodo_Coordinador.model;
+package com.worker.Worker.model;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,5 +15,5 @@ public class MiningTask {
     private List<Transaction> transactions;
     private int difficulty;
     private long minNonce;
-    private long maxNonce;// Nivel de dificultad del PoW
+    private long maxNonce;
 }

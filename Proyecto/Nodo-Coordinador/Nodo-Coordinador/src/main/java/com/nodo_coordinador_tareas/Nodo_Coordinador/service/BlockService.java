@@ -30,8 +30,6 @@ public class BlockService {
     @Autowired
     TransactionPoolService transactionPool;
 
-    @Autowired
-    RabbitTemplate rabbitTemplate;
 
     public Block save(Block block) {
         if (isValidBlock(block)) {

@@ -51,7 +51,40 @@ public class TransactionPoolService {
     }
 
 
+    private void checkForBlockCreation() {
+        int minTxPerBlock = 5;
+        if (pendingTransactions.size() >= minTxPerBlock) {
+            Block block = createBlock();
 
+            // Rango de búsqueda total
+            long rangoTotal = 1_000_000L; // podés ajustar
+            int partes = 10; // N° de subtareas
+            long rangoPorParte = rangoTotal / partes;
+
+            for (int i = 0; i < partes; i++) {
+                long minNonce = i * rangoPorParte;
+                long maxNonce = (i + 1) * rangoPorParte - 1;
+
+                MiningTask task = new MiningTask(
+                        block.getPreviousHash(),
+                        block.getTransactions(),
+                        block.getDifficulty(),
+                        minNonce,
+                        maxNonce
+                );
+
+                rabbitTemplate.convertAndSend(
+                        RabbitMQConfig.EXCHANGE_NAME,
+                        "task.mining",
+                        task
+                );
+            }
+        }
+    }
+
+
+
+    /*
     private void checkForBlockCreation() {
         int minTxPerBlock = 5;
         if (pendingTransactions.size() >= minTxPerBlock) {
@@ -67,7 +100,7 @@ public class TransactionPoolService {
                     task
             );
         }
-    }
+    }*/
 
     public Block createBlock() {
         List<Transaction> blockTransactions = new ArrayList<>();
@@ -81,7 +114,7 @@ public class TransactionPoolService {
         // Obtener el hash del último bloque (si no hay, usar valor inicial)
         String previousHash = blockchainService.getLastBlockHash();
         if (previousHash == null || previousHash.isEmpty()) {
-            previousHash = "0".repeat(64); // hash inicial (bloque génesis)
+            previousHash = "0".repeat(32); // hash inicial (bloque génesis)
         }
 
         // Definir la dificultad del PoW

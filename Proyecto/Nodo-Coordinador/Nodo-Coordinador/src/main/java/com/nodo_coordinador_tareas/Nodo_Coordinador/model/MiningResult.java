@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -15,4 +16,5 @@ public class MiningResult {
     private long nonce;
     private String previousHash;
     private List<Transaction> transactions;
+    private LocalDateTime timestamp;
 }
