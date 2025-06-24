@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MiningTaskListener {
-
     @Autowired
     TaskService taskService;
 
@@ -20,8 +19,8 @@ public class MiningTaskListener {
 
     @RabbitListener(queues = RabbitMQConfig.TASK_QUEUE)
     public void receiveTask(MiningTask task) {
-        String cadena = taskService.crearCadena(task.getPreviousHash(),task.getTransactions());
-        MiningResult miningResult = taskService.minar(task,cadena);
+        String cadena = taskService.crearCadena(task.getPreviousHash(), task.getTransactions());
+        MiningResult miningResult = taskService.minar(task, cadena);
 
         if (miningResult != null) {
             rabbitTemplate.convertAndSend(
@@ -33,7 +32,5 @@ public class MiningTaskListener {
         } else {
             System.out.println("❌ No se encontró solución en el rango asignado");
         }
-
     }
-
 }

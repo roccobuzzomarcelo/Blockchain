@@ -33,6 +33,7 @@ public class MineroCPU {
     public ResultadoMinado minar(String prefijo, String cadena, long minNonce, long maxNonce) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
+            long inicio = System.currentTimeMillis();
 
             for (long nonce = minNonce; nonce <= maxNonce; nonce++) {
                 String intento = cadena + nonce;
@@ -45,6 +46,8 @@ public class MineroCPU {
                 String hash = sb.toString();
 
                 if (hash.startsWith(prefijo)) {
+                    long fin = System.currentTimeMillis();
+                    System.out.println("Tiempo: " + (fin - inicio) + " ms");
                     return new ResultadoMinado(hash, nonce);
                 }
 
