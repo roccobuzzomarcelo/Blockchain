@@ -1,7 +1,6 @@
 package com.nodo_coordinador_tareas.Nodo_Coordinador.controller;
 
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.Transaction;
-import com.nodo_coordinador_tareas.Nodo_Coordinador.service.TransactionPoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +19,7 @@ public class TransactionController {
 
     @PostMapping("/transactions")
     public ResponseEntity<?> agregarTransaccion(@RequestBody Transaction transaction) {
-        transactionPoolService.addTransaction(transaction);
+
         return ResponseEntity.ok("Transaccion guardada correctamente");
     }
 }

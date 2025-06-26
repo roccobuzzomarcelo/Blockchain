@@ -11,6 +11,7 @@ public class RabbitMQConfig {
     public static final String EXCHANGE_NAME = "mining_tasks_exchange";
     public static final String TASK_QUEUE = "mining_tasks_queue";
     public static final String RESULT_QUEUE = "mining_results_queue";
+    public static final String TRANSACTION_QUEUE = "transactions.queue";
 
     @Bean
     public TopicExchange exchange() {
@@ -25,6 +26,11 @@ public class RabbitMQConfig {
     @Bean
     public Queue resultQueue() {
         return new Queue(RESULT_QUEUE);
+    }
+
+    @Bean
+    public Queue transactionQueue() {
+        return new Queue(TRANSACTION_QUEUE, true); // durable: true
     }
 
     @Bean

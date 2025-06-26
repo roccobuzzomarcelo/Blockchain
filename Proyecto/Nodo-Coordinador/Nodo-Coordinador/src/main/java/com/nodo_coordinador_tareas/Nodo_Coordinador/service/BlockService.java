@@ -27,8 +27,6 @@ public class BlockService {
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    TransactionPoolService transactionPool;
 
 
     public Block save(Block block) {
@@ -39,9 +37,6 @@ public class BlockService {
 
             // Guardar el hash del último bloque confirmado
             redisTemplate.opsForValue().set("latest_block_hash", savedBlock.getBlockHash());
-
-            // Limpiar transacciones del pool
-            transactionPool.clearTransactionsInBlock(savedBlock);
 
             return savedBlock;
         }

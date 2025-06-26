@@ -30,7 +30,6 @@ public class MiningResultListener {
                 result.getTransactions(),
                 4 // o la dificultad del bloque, según la lógica
         );
-
         try {
             blockService.save(nuevoBloque);
             System.out.println("Bloque aceptado y guardado: " + result.getBlockHash());
