@@ -17,7 +17,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @RedisHash("transaction")
-public class Transaction implements Serializable {
+public class Transaction implements Serializable{
 
     public Transaction() {
         this.estado = EstadoTransaction.PENDIENTE;

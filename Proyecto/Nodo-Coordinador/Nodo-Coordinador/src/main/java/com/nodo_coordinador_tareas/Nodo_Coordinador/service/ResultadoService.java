@@ -16,18 +16,17 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class ResultadoService {
 
-    @Value("${blockchain.difficultyPrefix}")
-    private String dificultad;
 
-    private final RedisTemplate<String, CandidateBlock> redisTemplate;
+    @Autowired
+    private RedisTemplate<String,CandidateBlock> redisTemplate;
+
+
     private final AtomicLong altura = new AtomicLong(0);
 
     @Autowired
     private BlockService blockService;
 
-    public ResultadoService(RedisTemplate<String, CandidateBlock> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
+
 
     public boolean procesarResultado(MiningResultDTO resultado) {
         CandidateBlock candidato = redisTemplate.opsForValue().get("block-pending:" + resultado.getBlockId());
@@ -39,13 +38,15 @@ public class ResultadoService {
 
         String hashCalculado = HashUtil.calcularHashMD5(base, resultado.getNonce());
 
-        if (hashCalculado.equals(resultado.getHash()) && hashCalculado.startsWith(dificultad)) {
+        String targetPrefix = "0".repeat(candidato.getDifficulty());
+
+        if (hashCalculado.equals(resultado.getHash()) && hashCalculado.startsWith(targetPrefix)) {
             Block bloque = Block.builder()
                     .blockHash(hashCalculado)
                     .nonce(resultado.getNonce())
                     .timestamp(java.time.Instant.now())
                     .transactions(candidato.getTransactions())
-                    .difficulty(dificultad.length())
+                    .difficulty(targetPrefix.length())
                     .previousHash(candidato.getPreviousHash())
                     .build();
 

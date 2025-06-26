@@ -20,7 +20,7 @@ public class TransactionController {
     @Autowired
     private TransactionValidatorService validatorService;
 
-    @PostMapping("/transactions")
+    @PostMapping
     public ResponseEntity<?> agregarTransaccion(@RequestBody Transaction transaction) {
 
         if (!validatorService.esValida(transaction)) {
@@ -29,6 +29,6 @@ public class TransactionController {
         }
 
         rabbitTemplate.convertAndSend("transaction_exchange", "transaction.routingKey", transaction);
-        return ok("✅ Transacción enviada a la cola correctamente.");
+        return ok(transaction);
     }
 }

@@ -27,7 +27,7 @@ public class BlockManagerService {
 
     public void crearBloqueYDispararMineria(List<Transaction> transacciones) {
         CandidateBlock bloque = crearBloqueCandidato(transacciones);
-        // ✅ Guardar bloque candidato en Redis
+        // Guardar bloque candidato en Redis
         redisTemplate.opsForValue().set("block-pending:" + bloque.getCandidateId(), bloque);
         distribuirTareasDeMineria(bloque);
     }
@@ -64,10 +64,12 @@ public class BlockManagerService {
             );
 
             rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.EXCHANGE_NAME,
+                    RabbitMQConfig.MINING_EXCHANGE,
                     "task.mining",
                     task
             );
+
+            System.out.println("tareas enviadas");
         }
     }
 

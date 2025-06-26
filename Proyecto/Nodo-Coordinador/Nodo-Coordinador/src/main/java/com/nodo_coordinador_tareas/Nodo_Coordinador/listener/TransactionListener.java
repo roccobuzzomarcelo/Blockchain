@@ -30,6 +30,7 @@ public class TransactionListener {
             System.out.println("Transacción válida recibida: " + tx.getId());
 
             if (buffer.size() >= BLOCK_SIZE) {
+                System.out.println("bloque creado");
                 blockManagerService.crearBloqueYDispararMineria(new ArrayList<>(buffer));
                 buffer.clear();
             }

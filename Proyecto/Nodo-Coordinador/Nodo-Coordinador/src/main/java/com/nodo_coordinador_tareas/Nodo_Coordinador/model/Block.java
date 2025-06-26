@@ -4,21 +4,24 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @RedisHash("block")
-public class Block implements Serializable {
+public class Block {
+
     @Id
     private String blockHash;
     private String previousHash;
-    private List<Transaction> transactions;
     private long nonce;
     private Instant timestamp;
+    private List<Transaction> transactions;
     private int difficulty;
+
 }
