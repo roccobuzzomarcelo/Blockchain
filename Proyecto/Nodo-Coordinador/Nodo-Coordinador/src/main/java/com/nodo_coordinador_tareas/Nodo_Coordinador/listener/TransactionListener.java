@@ -17,7 +17,6 @@ public class TransactionListener {
     @Autowired
     private TransactionValidatorService validator;
 
-
     private final List<Transaction> buffer = new ArrayList<>();
     private static final int BLOCK_SIZE = 5;
 
@@ -26,11 +25,6 @@ public class TransactionListener {
 
     @RabbitListener(queues = RabbitMQConfig.TRANSACTION_QUEUE)
     public void recibirTransaccion(Transaction tx) {
-        if (!validator.esValida(tx)) {
-            System.out.println("Transacción inválida descartada: " + tx.getId());
-            return;
-        }
-
         synchronized (buffer) {
             buffer.add(tx);
             System.out.println("Transacción válida recibida: " + tx.getId());

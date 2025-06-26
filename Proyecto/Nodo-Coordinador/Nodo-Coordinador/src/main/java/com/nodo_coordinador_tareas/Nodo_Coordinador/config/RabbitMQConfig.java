@@ -37,4 +37,20 @@ public class RabbitMQConfig {
     public Binding taskBinding(Queue taskQueue, TopicExchange exchange) {
         return BindingBuilder.bind(taskQueue).to(exchange).with("task.#");
     }
+
+    @Bean
+    public Binding transactionBinding(Queue transactionQueue, TopicExchange exchange) {
+        return BindingBuilder
+                .bind(transactionQueue)
+                .to(exchange)
+                .with("transaction.#");
+    }
+
+    @Bean
+    public Binding resultBinding(Queue resultQueue, TopicExchange exchange) {
+        return BindingBuilder
+                .bind(resultQueue)
+                .to(exchange)
+                .with("result.#");
+    }
 }

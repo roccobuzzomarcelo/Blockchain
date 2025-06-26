@@ -19,9 +19,11 @@ public class GenesisBlockInitializer {
         this.blockRepository = blockRepository;
     }
 
+
     @PostConstruct
     public void initGenesisBlock() {
         if (blockRepository.count() == 0) {
+            // Así se tienen que crear los bloques en REDIS.
             Block genesisBlock = Block.builder()
                     .blockHash("00000000000000000000000000000000")
                     .previousHash("GENESIS")
