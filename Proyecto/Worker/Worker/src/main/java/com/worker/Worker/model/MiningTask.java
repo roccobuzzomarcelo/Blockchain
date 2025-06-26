@@ -16,4 +16,12 @@ public class MiningTask {
     private int difficulty;
     private long minNonce;
     private long maxNonce;
+
+    public String getPreviousHash() {
+        return previousHash;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
 }
