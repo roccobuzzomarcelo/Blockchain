@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/blocks")
 public class BlockchainController {
@@ -30,6 +32,11 @@ public class BlockchainController {
         return blockService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public List<Block> getBlockAll(){
+        return blockService.findAll();
     }
 
 }

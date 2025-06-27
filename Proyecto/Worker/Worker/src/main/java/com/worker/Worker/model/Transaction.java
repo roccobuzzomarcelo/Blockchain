@@ -25,31 +25,7 @@ public class Transaction implements Serializable {
     private String usuarioEmisor;
     private String usuarioReceptor;
     private int monto;
-    private Instant timestamp;
     private EstadoTransaction estado;
 
-    public EstadoTransaction getEstado() {
-        return estado;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public int getMonto() {
-        return monto;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getUsuarioEmisor() {
-        return usuarioEmisor;
-    }
-
-    public String getUsuarioReceptor() {
-        return usuarioReceptor;
-    }
 }
 

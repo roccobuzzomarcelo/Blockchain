@@ -28,7 +28,6 @@ public class Transaction implements Serializable{
     private String usuarioEmisor;
     private String usuarioReceptor;
     private int monto;
-    private Instant timestamp;
     private EstadoTransaction estado;
     
 }

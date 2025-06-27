@@ -27,6 +27,7 @@ public class RedisConfig {
         return template;
     }
 
+    /*
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
@@ -51,6 +52,22 @@ public class RedisConfig {
         template.setHashValueSerializer(serializer);
 
         return template;
+    }*/
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        template.setDefaultSerializer(genericJackson2JsonRedisSerializer());
+        return template;
+    }
+
+    @Bean
+    public GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // 👈 Formato ISO-8601
+        return new GenericJackson2JsonRedisSerializer(mapper);
     }
 }
 

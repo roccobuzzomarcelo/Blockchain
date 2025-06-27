@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,28 +24,32 @@ public class BlockManagerService {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String,CandidateBlock> redisTemplate;
 
-    public void crearBloqueYDispararMineria(List<Transaction> transacciones) {
+    public void crearBloqueYDispararMineria(ArrayList<Transaction> transacciones) {
         CandidateBlock bloque = crearBloqueCandidato(transacciones);
         // Guardar bloque candidato en Redis
         redisTemplate.opsForValue().set("block-pending:" + bloque.getCandidateId(), bloque);
         distribuirTareasDeMineria(bloque);
     }
 
-    private CandidateBlock crearBloqueCandidato(List<Transaction> transacciones) {
+    private CandidateBlock crearBloqueCandidato(ArrayList<Transaction> transacciones) {
         String previousHash = blockService.getLastBlockHash();
         if (previousHash == null) {
             previousHash = "0".repeat(64); // bloque génesis
         }
 
-        return CandidateBlock.builder()
+        CandidateBlock candidateBlock = CandidateBlock.builder()
                 .candidateId(UUID.randomUUID().toString())
                 .previousHash(previousHash)
                 .transactions(transacciones)
                 .difficulty(calcularDificultad())
-                .baseString(previousHash + transacciones.toString())
                 .build();
+
+        System.out.println("id bloque candidato: " + candidateBlock.getCandidateId());
+        return candidateBlock;
+
+
     }
 
 

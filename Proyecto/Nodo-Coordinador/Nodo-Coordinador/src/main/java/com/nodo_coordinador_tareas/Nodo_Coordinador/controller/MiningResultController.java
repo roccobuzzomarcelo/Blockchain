@@ -17,6 +17,7 @@ public class MiningResultController {
     public ResponseEntity<String> recibirSolucion(@RequestBody MiningResultDTO resultado) {
         boolean valido = resultadoService.procesarResultado(resultado);
         if (valido) {
+
             return ResponseEntity.ok("Solución válida recibida.");
         } else {
             return ResponseEntity.badRequest().body("Solución inválida.");

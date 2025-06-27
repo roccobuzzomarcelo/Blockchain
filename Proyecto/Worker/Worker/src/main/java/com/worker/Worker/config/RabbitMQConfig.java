@@ -41,29 +41,21 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(resultQueue).to(exchange).with(RESULT_ROUTING_KEY);
     }
 
-    // ✅ Conversor JSON compatible con tipado y Java 8 time
     @Bean
     public MessageConverter jsonMessageConverter() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        BasicPolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator
-                .builder()
-                .allowIfSubType("com.nodo_coordinador_tareas")  // donde están los modelos DTO
-                .allowIfSubType("com.worker")                   // opcional si tenés clases locales
-                .build();
-
-        mapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
         return new Jackson2JsonMessageConverter(mapper);
     }
 
-    // 🛠 Inyectar el MessageConverter en RabbitTemplate
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(messageConverter);
+        template.setMessageConverter(jsonMessageConverter());
         return template;
     }
+
+
 }
 

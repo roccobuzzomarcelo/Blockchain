@@ -1,6 +1,9 @@
 package com.worker.Worker.consumer;
 
-import com.worker.Worker.dto.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.worker.Worker.dto.MiningResultDTO;
+import com.worker.Worker.dto.MiningTaskDTO;
 import com.worker.Worker.model.Transaction;
 import minero.MineroCPU;
 import minero.MineroCPU.ResultadoMinado;
@@ -24,8 +27,8 @@ public class RabbitWorkerListener {
     private final MineroCPU minero = new MineroCPU();
 
     @RabbitListener(queues = "mining_tasks_queue")
-    public void recibirTarea(MiningTaskDTO tarea) {
-        System.out.printf("[Worker %s] Tarea recibida para bloque %s%n", workerId);
+    public void recibirTarea(MiningTaskDTO tarea) throws JsonProcessingException {
+        System.out.printf("[Worker %s] Tarea recibida  para el bloque: )", workerId, tarea.getBlockId());
 
         // Construir la cadena base a minar: previousHash + txs serializadas
         String baseString = tarea.getPreviousHash() + serializarTransacciones(tarea.getTransactions());
@@ -37,8 +40,16 @@ public class RabbitWorkerListener {
             MiningResultDTO resultado = new MiningResultDTO();
             resultado.setHash(resultadoMinado.getHash());
             resultado.setNonce(resultadoMinado.getNonce());
+            resultado.setBlockId(tarea.getBlockId());
             resultado.setWorkerId(workerId);
 
+            System.out.println("hash armado: " +  resultado.getHash() +  "entre : " + tarea.getMinNonce() + "y"  + tarea.getMaxNonce());
+
+
+            System.out.println("hash conseguido: " + resultado);
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(resultado);
+            System.out.println("JSON generado: " + json);
             restTemplate.postForEntity(coordinadorUrl + "/solved_task", resultado, String.class);
             System.out.printf("[Worker %s] ¡Solución enviada! Hash: %s%n", workerId, resultadoMinado.getHash());
         } else {
@@ -52,8 +63,7 @@ public class RabbitWorkerListener {
             sb.append(tx.getId())
                     .append(tx.getUsuarioEmisor())
                     .append(tx.getUsuarioReceptor())
-                    .append(tx.getMonto())
-                    .append(tx.getTimestamp());
+                    .append(tx.getMonto());
         }
         return sb.toString();
     }

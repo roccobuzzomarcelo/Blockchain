@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 
 @Component
@@ -29,7 +30,7 @@ public class GenesisBlockInitializer {
                     .previousHash("GENESIS")
                     .nonce(0L)
                     .timestamp(Instant.now())
-                    .transactions(Collections.emptyList())
+                    .transactions(new ArrayList<>())
                     .build();
 
             blockRepository.save(genesisBlock);

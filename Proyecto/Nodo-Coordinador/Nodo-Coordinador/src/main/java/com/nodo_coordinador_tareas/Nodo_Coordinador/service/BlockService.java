@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +28,10 @@ public class BlockService {
         redisTemplate.opsForValue().set("latest_block_hash", savedBlock.getBlockHash());
 
         return savedBlock;
+    }
+
+    public List<Block> findAll(){
+        return (List<Block>) blockRepository.findAll();
     }
 
     public String getLastBlockHash() {

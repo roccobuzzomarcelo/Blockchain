@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,7 +22,7 @@ public class Block {
     private String previousHash;
     private long nonce;
     private Instant timestamp;
-    private List<Transaction> transactions;
+    private ArrayList<Transaction> transactions;
     private int difficulty;
 
 }
