@@ -1,12 +1,14 @@
 package com.nodo_coordinador_tareas.Nodo_Coordinador.service;
 
 import com.nodo_coordinador_tareas.Nodo_Coordinador.config.RabbitMQConfig;
+import com.nodo_coordinador_tareas.Nodo_Coordinador.enums.EstadoBlock;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.Block;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.dto.MiningTaskDTO;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.CandidateBlock;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.Transaction;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class BlockManagerService {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
+    @Qualifier("candidateBlockRedisTemplate")
     private RedisTemplate<String,CandidateBlock> redisTemplate;
 
 
@@ -54,6 +57,7 @@ public class BlockManagerService {
                 .candidateId(UUID.randomUUID().toString())
                 .previousHash(previousHash)
                 .transactions(transacciones)
+                .estado(EstadoBlock.PENDIENTE)
                 .difficulty(calcularDificultad())
                 .build();
 
@@ -92,8 +96,7 @@ public class BlockManagerService {
 
 
     private int calcularDificultad() {
-        // Por ahora fija, pero podrías usar lógica basada en los workers activos
-        return 4;
+        return 1;
     }
 }
 

@@ -1,6 +1,7 @@
 package com.nodo_coordinador_tareas.Nodo_Coordinador.model;
 
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.enums.EstadoBlock;
 import lombok.*;
 
@@ -12,12 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CandidateBlock implements Serializable {
-    private String candidateId;           // UUID para identificar esta tarea
+    private String candidateId;
     private String previousHash;
-    private EstadoBlock estado = EstadoBlock.PENDIENTE; // HEAD del último bloque
+    private EstadoBlock estado = EstadoBlock.PENDIENTE;
     private ArrayList<Transaction> transactions;
-    private int difficulty;               // Prefijo requerido     // Concatenación o JSON base para hashear
-    private long rangeStart;              // Desde qué nonce probar
-    private long rangeEnd;                // Hasta qué nonce probar
+    private int difficulty;
+    private long rangeStart;
+    private long rangeEnd;
 }

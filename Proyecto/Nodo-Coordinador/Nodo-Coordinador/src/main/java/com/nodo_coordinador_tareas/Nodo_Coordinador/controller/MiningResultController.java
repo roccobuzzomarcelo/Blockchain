@@ -2,11 +2,13 @@ package com.nodo_coordinador_tareas.Nodo_Coordinador.controller;
 
 import com.nodo_coordinador_tareas.Nodo_Coordinador.dto.MiningResultDTO;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.enums.EstadoBlock;
+import com.nodo_coordinador_tareas.Nodo_Coordinador.enums.ResultadoValidacion;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.CandidateBlock;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.service.BlockManagerService;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.service.ResultadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +28,16 @@ public class MiningResultController {
 
     @PostMapping("/solved_task")
     public ResponseEntity<String> recibirSolucion(@RequestBody MiningResultDTO resultado) {
-        boolean valido = resultadoService.procesarResultado(resultado);
-        if (valido) {
+        ResultadoValidacion validacion = resultadoService.procesarResultado(resultado);
 
-            return ResponseEntity.ok("Solución válida recibida.");
-        } else {
-            return ResponseEntity.badRequest().body("Solución inválida.");
+        switch (validacion) {
+            case VALIDA:
+                return ResponseEntity.ok("Solución válida recibida.");
+            case YA_MINADO:
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("⚠ El bloque ya fue minado.");
+            case INVALIDA:
+            default:
+                return ResponseEntity.badRequest().body("Solución inválida.");
         }
     }
 
@@ -52,7 +58,11 @@ public class MiningResultController {
             System.out.println("es candidato es null");
         }
 
-        System.out.println("lo consiguio");
+        if(candidato.getEstado() == EstadoBlock.MINADO){
+            return ResponseEntity.ok("El Bloque ya fue minado!");
+        }
+
+
         return ResponseEntity.ok(candidato.getEstado().name());
     }
 
