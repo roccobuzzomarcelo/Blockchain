@@ -45,7 +45,6 @@ public class RabbitWorkerListener {
 
             System.out.println("hash armado: " +  resultado.getHash() +  "entre : " + tarea.getMinNonce() + "y"  + tarea.getMaxNonce());
 
-
             System.out.println("hash conseguido: " + resultado);
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(resultado);

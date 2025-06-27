@@ -6,6 +6,7 @@ import com.nodo_coordinador_tareas.Nodo_Coordinador.service.BlockManagerService;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.service.TransactionValidatorService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,15 +28,22 @@ public class TransactionListener {
     public void recibirTransaccion(Transaction tx) {
         synchronized (buffer) {
             buffer.add(tx);
-            System.out.println("Transacción válida recibida: " + tx.getId());
-
-            if (buffer.size() >= BLOCK_SIZE) {
-                System.out.println("bloque creado");
-                blockManagerService.crearBloqueYDispararMineria(new ArrayList<>(buffer));
-                buffer.clear();
-            }
+            System.out.println("Transacción recibida y almacenada: " + tx.getId());
         }
     }
 
+    // ⏱ Se ejecuta cada 60 segundos
+    @Scheduled(fixedRate = 60000)
+    public void crearBloquePorTiempo() {
+        synchronized (buffer) {
+            if (!buffer.isEmpty()) {
+                System.out.println("⏱ Creando bloque por tiempo con " + buffer.size() + " transacciones.");
+                blockManagerService.crearBloqueYDispararMineria(new ArrayList<>(buffer));
+                buffer.clear();
+            } else {
+                System.out.println("⏱ No se creó bloque por tiempo: buffer vacío.");
+            }
+        }
+    }
 }
 
