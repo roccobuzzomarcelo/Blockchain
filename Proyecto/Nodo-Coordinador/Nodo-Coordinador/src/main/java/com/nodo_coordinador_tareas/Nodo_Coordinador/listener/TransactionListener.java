@@ -33,7 +33,7 @@ public class TransactionListener {
     }
 
     // ⏱ Se ejecuta cada 60 segundos
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 10000)
     public void crearBloquePorTiempo() {
         synchronized (buffer) {
             if (!buffer.isEmpty()) {

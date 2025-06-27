@@ -9,6 +9,7 @@ import minero.MineroCPU;
 import minero.MineroCPU.ResultadoMinado;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,9 +27,21 @@ public class RabbitWorkerListener {
     private final RestTemplate restTemplate = new RestTemplate();
     private final MineroCPU minero = new MineroCPU();
 
+
+
     @RabbitListener(queues = "mining_tasks_queue")
     public void recibirTarea(MiningTaskDTO tarea) throws JsonProcessingException {
         System.out.printf("[Worker %s] Tarea recibida  para el bloque: )", workerId, tarea.getBlockId());
+
+        String statusUrl = coordinadorUrl + "/block-status/" + tarea.getBlockId();
+
+        ResponseEntity<String> response = restTemplate.getForEntity(statusUrl, String.class);
+        String estado = response.getBody();
+
+        if ("MINADO".equals(estado) || "NO_EXISTE".equals(estado)) {
+            System.out.printf("[Worker %s] Bloque %s ya fue minado o no existe%n", workerId, tarea.getBlockId());
+            return;
+        }
 
         // Construir la cadena base a minar: previousHash + txs serializadas
         String baseString = tarea.getPreviousHash() + serializarTransacciones(tarea.getTransactions());

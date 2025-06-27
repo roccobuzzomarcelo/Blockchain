@@ -1,6 +1,7 @@
 package com.nodo_coordinador_tareas.Nodo_Coordinador.service;
 
 import com.nodo_coordinador_tareas.Nodo_Coordinador.dto.MiningResultDTO;
+import com.nodo_coordinador_tareas.Nodo_Coordinador.enums.EstadoBlock;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.Block;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.CandidateBlock;
 import com.nodo_coordinador_tareas.Nodo_Coordinador.model.Transaction;
@@ -11,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,59 +31,61 @@ public class ResultadoService {
     private BlockService blockService;
 
     public boolean procesarResultado(MiningResultDTO resultado) {
-        // 1. Adquirir un lock distribuido para evitar race conditions
         String redisKey = "block-pending:" + resultado.getBlockId();
-        CandidateBlock candidato = redisTemplate.opsForValue().get(redisKey);
+
+        CandidateBlock candidato = (CandidateBlock) redisTemplate.opsForValue().get(redisKey);
+
+        if (candidato == null) {
+            System.out.println("El bloque no existe");
+            return false;
+        }
+
+        if (candidato.getEstado() == EstadoBlock.MINADO) {
+            System.out.println("El bloque ya fue minado");
+            return false;
+        }
+
         String lockKey = "lock:" + resultado.getBlockId();
-        Boolean locked = redisTemplate.opsForValue().setIfAbsent(
-                lockKey, candidato ,
-                Duration.ofSeconds(10)  // Lock expira en 10 segundos (ajusta según necesidad)
-        );
+        Boolean locked = redisTemplate.opsForValue().setIfAbsent(lockKey, candidato, Duration.ofSeconds(10));
 
         if (locked == null || !locked) {
-            System.out.println("No se pudo adquirir el lock para el bloque " + resultado.getBlockId());
-            return false; // Otro worker ya está procesando este bloque
+            System.out.println("No se pudo adquirir el lock");
+            return false;
         }
 
         try {
-            // 2. Verificar si el bloque aún está pendiente en Redis
-
-            if (candidato == null) {
-                System.out.println("Bloque ya fue minado o no existe " +  resultado.getBlockId());
-                return false;
-            }
-
-            String base = candidato.getPreviousHash()
-                    + serializarTransacciones(candidato.getTransactions());
-            // 3. Validar el hash (ej: que empiece con "00000")
-            String hashCalculado = HashUtil.calcularHashMD5(base,resultado.getNonce());
+            // validación del hash
+            String base = candidato.getPreviousHash() + serializarTransacciones(candidato.getTransactions());
+            String hashCalculado = HashUtil.calcularHashMD5(base, resultado.getNonce());
             String prefijoRequerido = "0".repeat(candidato.getDifficulty());
 
             if (!hashCalculado.startsWith(prefijoRequerido)) {
-                System.out.println("Hash no cumple la dificultad requerida: " + hashCalculado);
+                System.out.println("Hash no cumple la dificultad");
                 return false;
             }
 
-            // 4. Si todo es válido, eliminar el bloque de Redis (ya minado)
-            System.out.println("el bloque original fue creado con exito!");
             Block bloque = Block.builder()
                     .blockHash(hashCalculado)
                     .nonce(resultado.getNonce())
-                    .timestamp(java.time.Instant.now())
+                    .timestamp(Instant.now())
                     .transactions(candidato.getTransactions())
-                    .difficulty(prefijoRequerido.length())
+                    .difficulty(candidato.getDifficulty())
                     .previousHash(candidato.getPreviousHash())
                     .build();
 
             blockService.save(bloque);
-            redisTemplate.delete(redisKey);
+
+            // marcar como minado
+            candidato.setEstado(EstadoBlock.MINADO);
+            redisTemplate.opsForValue().set(redisKey, candidato, Duration.ofMinutes(10));
+
             return true;
 
         } finally {
-            // 5. Liberar el lock SIEMPRE (incluso si hay errores)
             redisTemplate.delete(lockKey);
         }
     }
+
 
     /*public boolean procesarResultado(MiningResultDTO resultado) {
         System.out.println("Empezando a vlaidar ...");

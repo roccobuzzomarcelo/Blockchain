@@ -26,6 +26,17 @@ public class BlockManagerService {
     @Autowired
     private RedisTemplate<String,CandidateBlock> redisTemplate;
 
+
+    public void guardarCandidateBlock(CandidateBlock block) {
+        String key = "block-pending:" + block.getCandidateId();
+        redisTemplate.opsForValue().set(key, block);
+    }
+
+    public CandidateBlock obtenerCandidateBlock(String blockId) {
+        String key = "block-pending:" + blockId;
+        return redisTemplate.opsForValue().get(key);
+    }
+
     public void crearBloqueYDispararMineria(ArrayList<Transaction> transacciones) {
         CandidateBlock bloque = crearBloqueCandidato(transacciones);
         // Guardar bloque candidato en Redis
@@ -47,6 +58,7 @@ public class BlockManagerService {
                 .build();
 
         System.out.println("id bloque candidato: " + candidateBlock.getCandidateId());
+        guardarCandidateBlock(candidateBlock);
         return candidateBlock;
 
 
