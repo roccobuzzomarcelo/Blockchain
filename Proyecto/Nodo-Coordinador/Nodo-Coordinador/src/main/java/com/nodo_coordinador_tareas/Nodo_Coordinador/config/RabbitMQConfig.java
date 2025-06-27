@@ -19,7 +19,6 @@ public class RabbitMQConfig {
     public static final String MINING_EXCHANGE = "mining_tasks_exchange";
     public static final String TRANSACTION_EXCHANGE = "transaction_exchange";
     public static final String TASK_QUEUE = "mining_tasks_queue";
-    public static final String RESULT_QUEUE = "mining_results_queue";
     public static final String TRANSACTION_QUEUE = "transactions.queue";
 
     @Bean
@@ -38,10 +37,6 @@ public class RabbitMQConfig {
         return new Queue(TASK_QUEUE);
     }
 
-    @Bean
-    public Queue resultQueue() {
-        return new Queue(RESULT_QUEUE);
-    }
 
     @Bean
     public Queue transactionQueue() {
@@ -59,10 +54,6 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(transactionQueue).to(exchange).with("transaction.#");
     }
 
-    @Bean
-    public Binding resultBinding(Queue resultQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(resultQueue).to(exchange).with("result.#");
-    }
 
     // ✅ JACKSON CONFIGURADO PARA JAVA 8 (Instant)
     @Bean

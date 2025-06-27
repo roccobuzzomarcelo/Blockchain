@@ -1,7 +1,6 @@
 package com.worker.Worker.consumer;
 
-import com.worker.Worker.dto.MiningTaskDTO;
-import com.worker.Worker.dto.MiningResultDTO;
+import com.worker.Worker.dto.*;
 import com.worker.Worker.model.Transaction;
 import minero.MineroCPU;
 import minero.MineroCPU.ResultadoMinado;
