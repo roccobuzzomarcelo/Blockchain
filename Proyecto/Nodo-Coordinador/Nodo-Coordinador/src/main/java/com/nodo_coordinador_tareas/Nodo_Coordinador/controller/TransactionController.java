@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -22,6 +24,9 @@ public class TransactionController {
 
     @PostMapping
     public ResponseEntity<?> agregarTransaccion(@RequestBody Transaction transaction) {
+        if (transaction.getId() == null || transaction.getId().isEmpty()) {
+            transaction.setId(UUID.randomUUID().toString());
+        }
 
         if (!validatorService.esValida(transaction)) {
             System.out.println("Transacción inválida descartada: " + transaction.getId());
